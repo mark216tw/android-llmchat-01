@@ -1,0 +1,41 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <group
+        android:scaleX="0.7"
+        android:scaleY="0.7"
+        android:pivotX="54"
+        android:pivotY="54">
+
+    <!-- Gradient speech bubble silhouette, with a dark inset to form the outline. -->
+    <path
+        android:fillColor="#FF38D6FF"
+        android:pathData="M18,29 C26,14 44,9 63,12 C84,15 95,31 91,49 C87,67 69,79 48,76 C40,75 34,73 29,70 L17,82 L19,63 C13,55 13,40 18,29 Z">
+    </path>
+    <path
+        android:fillColor="#FF28134F"
+        android:pathData="M21,30 C29,17 46,14 62,17 C80,20 88,32 85,47 C82,62 66,70 49,69 C41,68 35,66 29,63 L22,69 L23,58 C17,50 17,39 21,30 Z" />
+
+    <!-- Three colorful dots centered in the bubble interior. -->
+    <path
+        android:fillColor="#FFFFD54F"
+        android:pathData="M33,36 A6,6 0,1 0,33,48 A6,6 0,1 0,33,36" />
+    <path
+        android:fillColor="#FFFF75C8"
+        android:pathData="M54,36 A6,6 0,1 0,54,48 A6,6 0,1 0,54,36" />
+    <path
+        android:fillColor="#FF63E4FF"
+        android:pathData="M75,36 A6,6 0,1 0,75,48 A6,6 0,1 0,75,36" />
+
+    <!-- Warm accent on the lower edge creates a colorful gradient-like transition. -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFF4D9D"
+        android:strokeWidth="5"
+        android:strokeLineCap="round"
+        android:pathData="M29,70 C40,75 55,78 69,72 C81,67 89,58 91,49" />
+    </group>
+</vector>

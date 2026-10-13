@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!--
+      This is a bring-your-own-endpoint LLM client. Users frequently point the
+      app at self-hosted OpenAI-compatible servers (Ollama, LM Studio, vLLM)
+      that are served over plain HTTP on a LAN address, so cleartext traffic is
+      permitted. Users should only configure endpoints they trust.
+    -->
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>
