@@ -43,7 +43,14 @@ class SpeechController(context: Context) {
     private val _errors = MutableSharedFlow<String>(extraBufferCapacity = 1)
     val errors: SharedFlow<String> = _errors.asSharedFlow()
 
-    init {
+    /**
+     * Creates the [TextToSpeech] engine on first use. Building it binds to the
+     * system TTS service, which is comparatively expensive, so this is kept off
+     * the chat screen's navigation/entry path and only paid when the user
+     * actually requests read-aloud.
+     */
+    private fun ensureEngine() {
+        if (tts != null) return
         tts = TextToSpeech(appContext) { status ->
             if (status == TextToSpeech.SUCCESS) {
                 val engine = tts
@@ -86,6 +93,7 @@ class SpeechController(context: Context) {
     fun start(messageId: Long, text: String, locale: Locale? = null) {
         if (text.isBlank()) return
         if (!ready) {
+            ensureEngine()
             pendingMessageId = messageId
             pendingText = text
             pendingLocale = locale

@@ -154,17 +154,25 @@ private fun AppRoot() {
             }
             composable(
                 route = Routes.CHAT,
-                arguments = listOf(navArgument(Routes.ARG_CONVERSATION_ID) { type = NavType.LongType }),
+                arguments = listOf(
+                    navArgument(Routes.ARG_CONVERSATION_ID) { type = NavType.LongType },
+                    navArgument(Routes.ARG_CONVERSATION_TITLE) {
+                        type = NavType.StringType
+                        nullable = true
+                        defaultValue = null
+                    }
+                ),
                 enterTransition = {
-                    slideInHorizontally(initialOffsetX = { it }) + fadeIn(tween(220))
+                    slideInHorizontally(initialOffsetX = { it }) + fadeIn(tween(160))
                 },
                 popExitTransition = {
-                    slideOutHorizontally(targetOffsetX = { it }) + fadeOut(tween(200))
+                    slideOutHorizontally(targetOffsetX = { it }) + fadeOut(tween(150))
                 }
             ) { entry ->
                 ChatScreen(
                     navController = navController,
-                    conversationId = entry.arguments?.getLong(Routes.ARG_CONVERSATION_ID) ?: -1L
+                    conversationId = entry.arguments?.getLong(Routes.ARG_CONVERSATION_ID) ?: -1L,
+                    initialTitle = entry.arguments?.getString(Routes.ARG_CONVERSATION_TITLE)
                 )
             }
             composable(Routes.DEBUG) {
@@ -202,8 +210,8 @@ private fun AppRoot() {
             bottomBar = {
                 AnimatedVisibility(
                     visible = isTopLevel,
-                    enter = expandVertically(tween(220)) + fadeIn(tween(220)),
-                    exit = shrinkVertically(tween(200)) + fadeOut(tween(200))
+                    enter = expandVertically(tween(160)) + fadeIn(tween(160)),
+                    exit = shrinkVertically(tween(150)) + fadeOut(tween(150))
                 ) {
                     NavigationBar {
                         NavigationBarItem(

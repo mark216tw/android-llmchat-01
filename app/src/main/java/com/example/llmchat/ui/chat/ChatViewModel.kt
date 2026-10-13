@@ -74,8 +74,18 @@ class ChatViewModel @Inject constructor(
             conversationId = id
             _uiState.update { it.copy(isLoadingMessages = true) }
             viewModelScope.launch {
+                // Load the conversation and its messages in a single pass so the
+                // title and content appear together, avoiding a two-step flash
+                // (title first, then messages after a spinner).
                 val conversation = conversationRepository.getConversation(id)
-                _uiState.update { it.copy(conversation = conversation) }
+                val messages = conversationRepository.getMessages(id)
+                _uiState.update {
+                    it.copy(
+                        conversation = conversation,
+                        messages = messages,
+                        isLoadingMessages = false
+                    )
+                }
             }
         }
         startObservingMessages(id)

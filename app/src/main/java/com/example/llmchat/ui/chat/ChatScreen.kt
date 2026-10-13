@@ -93,6 +93,7 @@ import java.util.Locale
 fun ChatPane(
     conversationId: Long,
     onBack: (() -> Unit)?,
+    initialTitle: String? = null,
     viewModel: ChatViewModel = hiltViewModel(key = "chat_$conversationId")
 ) {
     LaunchedEffect(conversationId) { viewModel.init(conversationId) }
@@ -102,7 +103,7 @@ fun ChatPane(
     val clipboard = LocalClipboardManager.current
     val chatFontSize = LocalChatFontSize.current
     val ttsLocale = LocalTtsLocale.current
-    val conversationTitle = state.conversation?.title ?: "新對話"
+    val conversationTitle = state.conversation?.title ?: initialTitle?.ifBlank { null } ?: "新對話"
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
@@ -133,7 +134,7 @@ fun ChatPane(
             TopAppBar(
                 title = {
                     Text(
-                        text = state.conversation?.title ?: "新對話",
+                        text = conversationTitle,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -330,11 +331,13 @@ fun ChatPane(
 @Composable
 fun ChatScreen(
     navController: NavController,
-    conversationId: Long
+    conversationId: Long,
+    initialTitle: String? = null
 ) {
     ChatPane(
         conversationId = conversationId,
-        onBack = { navController.popBackStack() }
+        onBack = { navController.popBackStack() },
+        initialTitle = initialTitle
     )
 }
 

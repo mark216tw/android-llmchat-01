@@ -79,7 +79,12 @@ fun ConversationsScreen(
     var deleteTarget by remember { mutableStateOf<Conversation?>(null) }
 
     fun openConversation(id: Long) {
-        if (expanded) selectedId = id else navController.navigate(Routes.chat(id))
+        if (expanded) {
+            selectedId = id
+        } else {
+            val title = conversations.firstOrNull { it.id == id }?.title
+            navController.navigate(Routes.chat(id, title))
+        }
     }
 
     fun newConversation() {
@@ -109,7 +114,11 @@ fun ConversationsScreen(
             Box(modifier = Modifier.weight(1f)) {
                 val id = selectedId
                 if (id != null) {
-                    ChatPane(conversationId = id, onBack = null)
+                    ChatPane(
+                        conversationId = id,
+                        onBack = null,
+                        initialTitle = conversations.firstOrNull { it.id == id }?.title
+                    )
                 } else {
                     EmptyDetailPlaceholder()
                 }
