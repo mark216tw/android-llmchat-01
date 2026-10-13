@@ -23,8 +23,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -49,6 +51,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -69,6 +72,8 @@ fun ConversationsScreen(
     viewModel: ConversationViewModel = hiltViewModel()
 ) {
     val conversations by viewModel.conversations.collectAsStateWithLifecycle()
+    val visibleConversations by viewModel.visibleConversations.collectAsStateWithLifecycle()
+    val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val hasProfile by viewModel.hasProfile.collectAsStateWithLifecycle()
     val currentProfile by viewModel.currentProfile.collectAsStateWithLifecycle()
     val apiName = currentProfile?.name?.ifBlank { null }
@@ -103,6 +108,10 @@ fun ConversationsScreen(
                 showFab = showNewButton,
                 apiName = apiName,
                 conversations = conversations,
+                visibleConversations = visibleConversations,
+                searchQuery = searchQuery,
+                onSearchQueryChange = viewModel::onSearchQueryChange,
+                onClearSearch = viewModel::clearSearchQuery,
                 selectedId = selectedId,
                 onOpen = ::openConversation,
                 onNew = ::newConversation,
@@ -131,6 +140,10 @@ fun ConversationsScreen(
             showFab = showNewButton,
             apiName = apiName,
             conversations = conversations,
+            visibleConversations = visibleConversations,
+            searchQuery = searchQuery,
+            onSearchQueryChange = viewModel::onSearchQueryChange,
+            onClearSearch = viewModel::clearSearchQuery,
             selectedId = null,
             onOpen = ::openConversation,
             onNew = ::newConversation,
@@ -178,6 +191,10 @@ private fun ConversationListPane(
     showFab: Boolean,
     apiName: String?,
     conversations: List<Conversation>,
+    visibleConversations: List<Conversation>,
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit,
+    onClearSearch: () -> Unit,
     selectedId: Long?,
     onOpen: (Long) -> Unit,
     onNew: () -> Unit,
@@ -250,18 +267,60 @@ private fun ConversationListPane(
                 contentPadding = PaddingValues(12.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(conversations, key = { it.id }) { conversation ->
-                    ConversationCard(
-                        conversation = conversation,
-                        selected = conversation.id == selectedId,
-                        onOpen = { onOpen(conversation.id) },
-                        onRename = { onRename(conversation) },
-                        onDelete = { onDelete(conversation) }
+                item(key = "search") {
+                    ConversationSearchField(
+                        query = searchQuery,
+                        onQueryChange = onSearchQueryChange,
+                        onClear = onClearSearch
                     )
+                }
+                if (visibleConversations.isEmpty()) {
+                    item(key = "no_match") {
+                        Text(
+                            text = "找不到符合的對話",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp)
+                        )
+                    }
+                } else {
+                    items(visibleConversations, key = { it.id }) { conversation ->
+                        ConversationCard(
+                            conversation = conversation,
+                            selected = conversation.id == selectedId,
+                            onOpen = { onOpen(conversation.id) },
+                            onRename = { onRename(conversation) },
+                            onDelete = { onDelete(conversation) }
+                        )
+                    }
                 }
             }
         }
     }
+}
+
+@Composable
+private fun ConversationSearchField(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    onClear: () -> Unit
+) {
+    OutlinedTextField(
+        value = query,
+        onValueChange = onQueryChange,
+        modifier = Modifier.fillMaxWidth(),
+        placeholder = { Text("搜尋對話標題") },
+        leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
+        trailingIcon = {
+            if (query.isNotEmpty()) {
+                IconButton(onClick = onClear) {
+                    Icon(Icons.Filled.Close, contentDescription = "清除查詢")
+                }
+            }
+        },
+        singleLine = true
+    )
 }
 
 @Composable
